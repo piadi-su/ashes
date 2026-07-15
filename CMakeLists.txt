@@ -1,25 +1,25 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(ash C)
+project(ashes C)
 
-add_executable(ash 
+add_executable(ashes 
 	src/main.c
 	src/bar.c
 )
 
-target_include_directories(ash PRIVATE
+target_include_directories(ashes PRIVATE
     /usr/include/freetype2
     /usr/include/fontconfig
     /usr/include
 )
 
-target_compile_options(ash PRIVATE
+target_compile_options(ashes PRIVATE
     -Wall
     -Wextra
     -Wpedantic
 )
 
-target_link_libraries(ash PRIVATE
+target_link_libraries(ashes PRIVATE
     X11
     Xft
     fontconfig
@@ -29,7 +29,7 @@ target_link_libraries(ash PRIVATE
 )
 
 # ===== INSTALL RULE =====
-install(TARGETS ash
+install(TARGETS ashes
     RUNTIME DESTINATION bin
 )
 

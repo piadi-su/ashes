@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/piadi/code_skool/ashes/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

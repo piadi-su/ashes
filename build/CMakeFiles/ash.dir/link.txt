@@ -1,0 +1,1 @@
+/usr/bin/cc -Wl,--dependency-file=CMakeFiles/ash.dir/link.d CMakeFiles/ash.dir/src/main.c.o CMakeFiles/ash.dir/src/bar.c.o -o ash  -lX11 -lXft -lfontconfig -lfreetype -lm -lXrender

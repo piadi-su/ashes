@@ -38,31 +38,17 @@ void handle_sigint(int sig);
 int main(void)
 {
 	XEvent ev;
-    int i3_event_sock;
-    int i3_query_sock;
     BarState s = {0};
 
     // configure signal handler 
     signal(SIGINT, handle_sigint); 
 
-    // inizialize socket i3 IPC
-    i3_event_sock = connect_i3_ipc();
-    i3_query_sock = connect_i3_ipc();
-    if (i3_event_sock < 0 || i3_query_sock < 0) {
-        fprintf(stderr, "can't connect to the i3ipc\n");
-        return 1;
-    }
-    
-	//for valgrind 
-    i3_subscribe(i3_event_sock);
 
 	// dpy connection
     Display *dpy = XOpenDisplay(NULL);
     if(dpy == NULL)
     {
         fprintf(stderr, "can not open the disply!\n");
-        close(i3_event_sock);
-        close(i3_query_sock);
         return 1;
     }
 
@@ -105,7 +91,6 @@ int main(void)
 	GC gc = XCreateGC(dpy, win, 0, NULL);
 
 	// Caricamento dati iniziale prima di entrare nel ciclo
-	update_workspaces(i3_query_sock, &s);
 	update_datetime(&s);
 	update_volume(&s);
 	update_ram(&s);
@@ -113,7 +98,6 @@ int main(void)
 
 	// selector config
 	int x11_fd = ConnectionNumber(dpy);
-	int max_fd = (x11_fd > i3_event_sock) ? x11_fd : i3_event_sock;
 	fd_set in_fds;
 	struct timeval tv;
 
@@ -122,15 +106,12 @@ int main(void)
 	{
 		FD_ZERO(&in_fds);
 		FD_SET(x11_fd, &in_fds);
-		FD_SET(i3_event_sock, &in_fds);
 
 		tv.tv_sec = 1;
 		tv.tv_usec = 0;
 
-		int activity = select(max_fd + 1, &in_fds, NULL, NULL, &tv);
 		int redraw = 0;
 
-		if (activity < 0) continue;
 
 		// X11 event handler
 		while (XPending(dpy))
@@ -140,34 +121,9 @@ int main(void)
 				redraw = 1;
 		}
 
-		// i3 event handler 
-		if (FD_ISSET(i3_event_sock, &in_fds)) {
-			char magic[6];
-			uint32_t r_len = 0, r_type = 0;
-
-			//read the header
-			if (read_full(i3_event_sock, magic, 6) == 0) {
-				if (read_full(i3_event_sock, &r_len, 4) == 0 &&
-						read_full(i3_event_sock, &r_type, 4) == 0) {
-
-					// Always free the Payload
-					if (r_len > 0) {
-						char *ev_j = malloc(r_len);
-						if (ev_j) {
-							read_full(i3_event_sock, ev_j, r_len);
-							free(ev_j);
-						}
-					}
-
-					//get worksapce
-					update_workspaces(i3_query_sock, &s);
-					redraw = 1;
-				}
-			}
-		}
 
 		// timer handler / background refresh
-		if (activity == 0 || redraw) {
+		if (redraw) {
 			update_datetime(&s);
 			update_volume(&s);
 			update_ram(&s);
@@ -181,8 +137,6 @@ int main(void)
 	}
 	
 	cleanup(dpy, win, gc);
-	close(i3_event_sock);
-	close(i3_query_sock);
 	return 0;
 }
 

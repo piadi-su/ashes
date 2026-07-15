@@ -1,0 +1,7 @@
+/home/piadi/code_skool/ashes/build/CMakeFiles/ashes.dir
+/home/piadi/code_skool/ashes/build/CMakeFiles/edit_cache.dir
+/home/piadi/code_skool/ashes/build/CMakeFiles/rebuild_cache.dir
+/home/piadi/code_skool/ashes/build/CMakeFiles/list_install_components.dir
+/home/piadi/code_skool/ashes/build/CMakeFiles/install.dir
+/home/piadi/code_skool/ashes/build/CMakeFiles/install/local.dir
+/home/piadi/code_skool/ashes/build/CMakeFiles/install/strip.dir

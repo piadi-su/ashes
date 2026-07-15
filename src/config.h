@@ -36,7 +36,7 @@
 
 
 // Bottom = 0 -> top | Bottom = 1 -> bottom
-#define BOTTOM 0
+#define BOTTOM 1
 
 
 
