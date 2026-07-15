@@ -196,15 +196,6 @@ CMAKE_TAPI:FILEPATH=CMAKE_TAPI-NOTFOUND
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //Value Computed by CMake
-ash_BINARY_DIR:STATIC=/home/piadi/code_skool/ashes/build
-
-//Value Computed by CMake
-ash_IS_TOP_LEVEL:STATIC=ON
-
-//Value Computed by CMake
-ash_SOURCE_DIR:STATIC=/home/piadi/code_skool/ashes
-
-//Value Computed by CMake
 ashes_BINARY_DIR:STATIC=/home/piadi/code_skool/ashes/build
 
 //Value Computed by CMake

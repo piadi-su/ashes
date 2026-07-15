@@ -31,7 +31,6 @@ void init_multi_draws(Display *dpy, Window wins[], int count, int screen);
 void draw_bar_on_monitor(Display *dpy, Window win, GC gc, BarState *s, int monitor_idx);
 void free_multi_draws(int count);
 
-void update_workspace(BarState *s, int monitor_idx);
 void update_volume(BarState *s);
 void update_ipv4(BarState *s);
 void update_ram(BarState *s);
