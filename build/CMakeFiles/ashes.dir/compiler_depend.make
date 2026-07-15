@@ -161,20 +161,12 @@ CMakeFiles/ashes.dir/src/main.c.o: /home/piadi/code_skool/ashes/src/main.c \
   /usr/include/X11/Xlib.h \
   /usr/include/X11/Xosdefs.h \
   /usr/include/X11/Xutil.h \
+  /usr/include/X11/extensions/Xinerama.h \
   /usr/include/X11/extensions/Xrender.h \
   /usr/include/X11/extensions/render.h \
   /usr/include/X11/keysym.h \
   /usr/include/X11/keysymdef.h \
   /usr/include/alloca.h \
-  /usr/include/asm-generic/bitsperlong.h \
-  /usr/include/asm-generic/posix_types.h \
-  /usr/include/asm-generic/socket.h \
-  /usr/include/asm-generic/sockios.h \
-  /usr/include/asm/bitsperlong.h \
-  /usr/include/asm/posix_types.h \
-  /usr/include/asm/posix_types_64.h \
-  /usr/include/asm/socket.h \
-  /usr/include/asm/sockios.h \
   /usr/include/bits/atomic_wide_counter.h \
   /usr/include/bits/byteswap.h \
   /usr/include/bits/confname.h \
@@ -208,9 +200,6 @@ CMakeFiles/ashes.dir/src/main.c.o: /home/piadi/code_skool/ashes/src/main.c \
   /usr/include/bits/sigstack.h \
   /usr/include/bits/sigstksz.h \
   /usr/include/bits/sigthread.h \
-  /usr/include/bits/sockaddr.h \
-  /usr/include/bits/socket.h \
-  /usr/include/bits/socket_type.h \
   /usr/include/bits/ss_flags.h \
   /usr/include/bits/stat.h \
   /usr/include/bits/stdint-intn.h \
@@ -246,8 +235,6 @@ CMakeFiles/ashes.dir/src/main.c.o: /home/piadi/code_skool/ashes/src/main.c \
   /usr/include/bits/types/stack_t.h \
   /usr/include/bits/types/struct_FILE.h \
   /usr/include/bits/types/struct___jmp_buf_tag.h \
-  /usr/include/bits/types/struct_iovec.h \
-  /usr/include/bits/types/struct_osockaddr.h \
   /usr/include/bits/types/struct_sigstack.h \
   /usr/include/bits/types/struct_timespec.h \
   /usr/include/bits/types/struct_timeval.h \
@@ -283,8 +270,6 @@ CMakeFiles/ashes.dir/src/main.c.o: /home/piadi/code_skool/ashes/src/main.c \
   /usr/include/gnu/stubs.h \
   /usr/include/limits.h \
   /usr/include/linux/limits.h \
-  /usr/include/linux/posix_types.h \
-  /usr/include/linux/stddef.h \
   /usr/include/setjmp.h \
   /usr/include/signal.h \
   /usr/include/stdc-predef.h \
@@ -295,11 +280,9 @@ CMakeFiles/ashes.dir/src/main.c.o: /home/piadi/code_skool/ashes/src/main.c \
   /usr/include/strings.h \
   /usr/include/sys/cdefs.h \
   /usr/include/sys/select.h \
-  /usr/include/sys/socket.h \
   /usr/include/sys/stat.h \
   /usr/include/sys/types.h \
   /usr/include/sys/ucontext.h \
-  /usr/include/sys/un.h \
   /usr/include/unistd.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/limits.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/stdarg.h \
@@ -312,6 +295,7 @@ ashes: /usr/lib/Scrt1.o \
   /usr/lib/crtn.o \
   /usr/lib/libX11.so \
   /usr/lib/libXft.so \
+  /usr/lib/libXinerama.so \
   /usr/lib/libXrender.so \
   /usr/lib/libc.so \
   /usr/lib/libfontconfig.so \
@@ -328,6 +312,7 @@ ashes: /usr/lib/Scrt1.o \
   /usr/lib/ld-linux-x86-64.so.2 \
   /usr/lib/libXau.so.6 \
   /usr/lib/libXdmcp.so.6 \
+  /usr/lib/libXext.so.6 \
   /usr/lib/libbrotlicommon.so.1 \
   /usr/lib/libbrotlidec.so.1 \
   /usr/lib/libbz2.so.1.0 \
@@ -341,6 +326,7 @@ ashes: /usr/lib/Scrt1.o \
   /usr/lib/libz.so.1 \
   /usr/lib32/libXau.so.6 \
   /usr/lib32/libXdmcp.so.6 \
+  /usr/lib32/libXext.so.6 \
   /usr/lib32/libbrotlicommon.so.1 \
   /usr/lib32/libbrotlidec.so.1 \
   /usr/lib32/libbz2.so.1.0 \
@@ -483,6 +469,8 @@ CMakeFiles/ashes.dir/src/bar.c.o:
 /usr/include/bits/pthread_stack_min.h:
 
 /usr/include/bits/stdint-uintn.h:
+
+/usr/lib/libXext.so.6:
 
 /usr/include/time.h:
 
@@ -670,6 +658,8 @@ CMakeFiles/ashes.dir/src/bar.c.o:
 
 /usr/include/bits/types/clock_t.h:
 
+/usr/lib32/libXext.so.6:
+
 /usr/include/stdint.h:
 
 /usr/include/X11/Xlib.h:
@@ -764,6 +754,8 @@ CMakeFiles/ashes.dir/src/bar.c.o:
 
 /usr/include/freetype2/freetype/ftmoderr.h:
 
+/usr/include/X11/extensions/Xinerama.h:
+
 /usr/include/bits/types/locale_t.h:
 
 /usr/include/freetype2/freetype/ftsystem.h:
@@ -771,6 +763,8 @@ CMakeFiles/ashes.dir/src/bar.c.o:
 /usr/include/freetype2/ft2build.h:
 
 /usr/include/gnu/stubs-64.h:
+
+/usr/lib/libXinerama.so:
 
 /usr/include/bits/pthreadtypes-arch.h:
 

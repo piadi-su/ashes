@@ -1,26 +1,18 @@
 /*
- * ash - simple X11/i3 status bar
+ * ashes, is a fork of ash a status bar for i3-wm
+ * but adapted to be used for ash-wm by reading is ipc
  *
- * A small status bar implemented with Xlib and Xft.
- * Uses i3 IPC for workspace information and periodically
- * updates system status (time, RAM, volume, network).
+ * ash repo: https://github.com/piadi-su/ash.git
  *
- * The program runs a single event loop using select(2)
- * over X11 connection and i3 IPC socket.
- *
- * Built directly on X11 (Xlib + Xft) without GUI toolkits.
- * 
  */
-
 
 #include <X11/X.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
+#include <X11/extensions/Xinerama.h> 
 #include <signal.h>
-#include <sys/socket.h>
-#include <sys/un.h>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -29,123 +21,149 @@
 #include "config.h"
 
 
-
 volatile sig_atomic_t running = 1;
 
 void handle_sigint(int sig);
 
-
 int main(void)
 {
-	XEvent ev;
+    XEvent ev;
     BarState s = {0};
 
-    // configure signal handler 
-    signal(SIGINT, handle_sigint); 
+    signal(SIGINT, handle_sigint);
 
-
-	// dpy connection
     Display *dpy = XOpenDisplay(NULL);
-    if(dpy == NULL)
-    {
-        fprintf(stderr, "can not open the disply!\n");
+    if (dpy == NULL) {
+        fprintf(stderr, "can not open the display!\n");
         return 1;
+	}
+
+    int screen = DefaultScreen(dpy);
+    Window root = RootWindow(dpy, screen);
+    XSetWindowAttributes attrs = {0};
+
+    XSelectInput(dpy, root, PropertyChangeMask);
+
+    int monitors_count = 1;
+    XineramaScreenInfo *info = NULL;
+
+    if (XineramaIsActive(dpy)) {
+        int n;
+        info = XineramaQueryScreens(dpy, &n);
+        if (info && n > 0) {
+            monitors_count = n;
+        }
     }
 
-	// get the display like DP-2 ecc
-	int screen = DefaultScreen(dpy);
+    if (monitors_count > MAX_MONITORS) {
+        monitors_count = MAX_MONITORS;
+    }
 
-	//create root window/desktop
-	Window root = RootWindow(dpy, screen);
+    Window wins[MAX_MONITORS];
 
-	// for dock pos
-	XSetWindowAttributes attrs = {0};
+    for (int i = 0; i < monitors_count; i++) {
+        int m_x = 0, m_y = 0, m_w = 0, m_h = 0;
 
-	//get the width of the screen
-	int width = DisplayWidth(dpy, screen);
+        if (info) {
+            m_x = info[i].x_org;
+            m_y = info[i].y_org;
+            m_w = info[i].width;
+            m_h = info[i].height;
+        } else {
+            m_x = 0;
+            m_y = 0;
+            m_w = DisplayWidth(dpy, screen);
+            m_h = DisplayHeight(dpy, screen);
+        }
 
-	//get bottom position
-	int screen_height = DisplayHeight(dpy, screen);
-    int y_pos = (BOTTOM) ? (screen_height - BAR_HEIGHT) : 0;
+        int y_pos = (BOTTOM) ? (m_y + m_h - BAR_HEIGHT) : m_y;
 
-    //create the window
-    Window win = XCreateWindow(
-            dpy, root, 0, y_pos, width, BAR_HEIGHT, 0,
-            CopyFromParent, InputOutput, CopyFromParent,
-            CWOverrideRedirect, &attrs
-            );
+        wins[i] = XCreateWindow(
+                dpy, root, m_x, y_pos, m_w, BAR_HEIGHT, 0,
+                CopyFromParent, InputOutput, CopyFromParent,
+                CWOverrideRedirect, &attrs
+                );
 
-	//make it not in tyle mode reserv the pixel size 
-	set_dock_properties(dpy, win, width);
+        set_dock_properties(dpy, wins[i], m_w);
 
-	// say what kind of input the bar can recive
-	XSelectInput(dpy, win, ExposureMask | KeyPressMask);
+        XSelectInput(dpy, wins[i], ExposureMask | KeyPressMask);
 
-	//inizialize the font 
-	init_font(dpy, win, screen);
+        XMapWindow(dpy, wins[i]);
+    }
 
-	//set in wait the window and make it visible 
-	XMapWindow(dpy, win);
+    if (info) {
+        XFree(info);
+    }
 
-	//create the thing to draw stuff on bar
-	GC gc = XCreateGC(dpy, win, 0, NULL);
+    init_font(dpy, wins[0], screen);
 
-	// Caricamento dati iniziale prima di entrare nel ciclo
-	update_datetime(&s);
-	update_volume(&s);
-	update_ram(&s);
-	update_ipv4(&s);
+    GC gc = XCreateGC(dpy, wins[0], 0, NULL);
+    init_multi_draws(dpy, wins, monitors_count, screen);
 
-	// selector config
-	int x11_fd = ConnectionNumber(dpy);
-	fd_set in_fds;
-	struct timeval tv;
+    update_datetime(&s);
+    update_volume(&s);
+    update_ram(&s);
+    update_ipv4(&s);
 
-	//bar cycle
-	while (running)
-	{
-		FD_ZERO(&in_fds);
-		FD_SET(x11_fd, &in_fds);
+    int x11_fd = ConnectionNumber(dpy);
+    fd_set in_fds;
+    struct timeval tv;
 
-		tv.tv_sec = 1;
-		tv.tv_usec = 0;
+    while (running)
+    {
+        FD_ZERO(&in_fds);
+        FD_SET(x11_fd, &in_fds);
 
-		int redraw = 0;
+        tv.tv_sec = 1;
+        tv.tv_usec = 0;
 
+        int activity = select(x11_fd + 1, &in_fds, NULL, NULL, &tv);
+        int redraw = 0;
 
-		// X11 event handler
-		while (XPending(dpy))
-		{
-			XNextEvent(dpy, &ev);
-			if (ev.type == Expose && ev.xexpose.count == 0)
-				redraw = 1;
-		}
+        if (activity < 0) continue;
 
+        while (XPending(dpy))
+        {
+            XNextEvent(dpy, &ev);
+            
+            if (ev.type == Expose && ev.xexpose.count == 0) {
+                redraw = 1;
+            }
 
-		// timer handler / background refresh
-		if (redraw) {
-			update_datetime(&s);
-			update_volume(&s);
-			update_ram(&s);
-			update_ipv4(&s);
-			redraw = 1; 
-		}
+            if (ev.type == PropertyNotify && ev.xproperty.window == root) {
+                Atom prop = XInternAtom(dpy, "_ASHWM_WORKSPACES", False);
+                if (ev.xproperty.atom == prop) {
+                    redraw = 1; 
+                }
+            }
+        }
 
-		if (redraw) {
-			draw_bar(dpy, win, gc, &s);
-		}
-	}
-	
-	cleanup(dpy, win, gc);
-	return 0;
+        if (activity == 0 || redraw) {
+            update_datetime(&s);
+            update_volume(&s);
+            update_ram(&s);
+            update_ipv4(&s);
+            redraw = 1;
+        }
+
+        if (redraw) {
+            for (int i = 0; i < monitors_count; i++) {
+                draw_bar_on_monitor(dpy, wins[i], gc, &s, i);
+            }
+        }
+    }
+    
+    free_multi_draws(monitors_count);
+    for (int i = 1; i < monitors_count; i++) {
+        XDestroyWindow(dpy, wins[i]);
+    }
+    cleanup(dpy, wins[0], gc);
+
+    return 0;
 }
 
-
-void 
-handle_sigint(int sig)
+void handle_sigint(int sig)
 {
     (void)sig;
     running = 0;
 }
-
-

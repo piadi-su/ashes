@@ -14,6 +14,7 @@ ashes: \
   /usr/lib/libm.so.6 \
   /usr/lib/libmvec.so.1 \
   /usr/lib/gcc/x86_64-pc-linux-gnu/16/../../../../lib/libXrender.so \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/16/../../../../lib/libXinerama.so \
   /usr/lib/gcc/x86_64-pc-linux-gnu/16/libgcc.a \
   /usr/lib/gcc/x86_64-pc-linux-gnu/16/libgcc_s_asneeded.so \
   /usr/lib/gcc/x86_64-pc-linux-gnu/16/libgcc_s_asneeded.so \
@@ -57,6 +58,8 @@ ashes: \
   /usr/lib32/libbrotlidec.so.1 \
   /usr/lib/libbrotlidec.so.1 \
   /usr/lib/ld-linux-x86-64.so.2 \
+  /usr/lib32/libXext.so.6 \
+  /usr/lib/libXext.so.6 \
   /usr/lib32/libXau.so.6 \
   /usr/lib/libXau.so.6 \
   /usr/lib32/libXdmcp.so.6 \
@@ -93,6 +96,8 @@ CMakeFiles/ashes.dir/src/bar.c.o:
 /usr/lib/libmvec.so.1:
 
 /usr/lib/gcc/x86_64-pc-linux-gnu/16/../../../../lib/libXrender.so:
+
+/usr/lib/gcc/x86_64-pc-linux-gnu/16/../../../../lib/libXinerama.so:
 
 /usr/lib/gcc/x86_64-pc-linux-gnu/16/libgcc.a:
 
@@ -179,6 +184,10 @@ CMakeFiles/ashes.dir/src/bar.c.o:
 /usr/lib/libbrotlidec.so.1:
 
 /usr/lib/ld-linux-x86-64.so.2:
+
+/usr/lib32/libXext.so.6:
+
+/usr/lib/libXext.so.6:
 
 /usr/lib32/libXau.so.6:
 

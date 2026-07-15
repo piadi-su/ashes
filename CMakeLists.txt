@@ -26,6 +26,7 @@ target_link_libraries(ashes PRIVATE
     freetype
     m
     Xrender
+	Xinerama
 )
 
 # ===== INSTALL RULE =====

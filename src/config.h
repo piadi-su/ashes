@@ -5,10 +5,13 @@
  *
  * */
 
+//number of monitors u have
+#define MAX_MONITORS 2
 
 // Bar height in pixel
 #define BAR_HEIGHT 24
 
+#define WORKSPACES_PER_MONITOR 10
 
 
 // Bar background color
