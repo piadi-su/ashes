@@ -51,7 +51,7 @@ free_multi_draws(int count)
 void 
 init_font(Display *dpy, Window win, int screen)
 {
-    (void)win; // Non più necessario qui per XftDraw singolo
+    (void)win; 
     xft_font = XftFontOpenName(dpy, screen, BAR_FONT);
 
     unsigned r = (TEXT_COLOR >> 16) & 0xFF;
@@ -146,7 +146,11 @@ draw_bar_on_monitor(Display *dpy, Window win, GC gc, BarState *s, int monitor_id
     int screen = DefaultScreen(dpy);
     Window root = RootWindow(dpy, screen);
 
-    Atom prop = XInternAtom(dpy, "_ASHWM_WORKSPACES", False);
+    static Atom prop = None;
+    if (prop == None) {
+        prop = XInternAtom(dpy, "_ASHWM_WORKSPACES", False);
+    }
+
     Atom actual_type;
     int actual_format;
     unsigned long nitems, bytes_after;
@@ -175,7 +179,7 @@ draw_bar_on_monitor(Display *dpy, Window win, GC gc, BarState *s, int monitor_id
                         } else if (status == 'O') {
                             snprintf(tmp, sizeof(tmp), "%d ", local_ws_idx);
                         } else {
-                            tmp[0] = '\0'; // Nascondi se vuoto
+                            tmp[0] = '\0';
                         }
                         strncat(local_workspace_str, tmp, sizeof(local_workspace_str) - strlen(local_workspace_str) - 1);
                         local_ws_idx++;
@@ -195,6 +199,7 @@ draw_bar_on_monitor(Display *dpy, Window win, GC gc, BarState *s, int monitor_id
         local_workspace_str[len_ws - 1] = '\0';
     }
 
+    // --- RENDERING ---
     BarLayout l;
     build_layout(s, &l);
     

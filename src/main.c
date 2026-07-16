@@ -105,23 +105,27 @@ int main(void)
     update_ram(&s);
     update_ipv4(&s);
 
-    int x11_fd = ConnectionNumber(dpy);
+	int x11_fd = ConnectionNumber(dpy);
     fd_set in_fds;
     struct timeval tv;
+    
+    int update_counter = 0;
+
+    int redraw = 1;
 
     while (running)
     {
         FD_ZERO(&in_fds);
         FD_SET(x11_fd, &in_fds);
 
-        tv.tv_sec = 1;
-        tv.tv_usec = 0;
+        tv.tv_sec = 0;
+        tv.tv_usec = 80000; 
 
         int activity = select(x11_fd + 1, &in_fds, NULL, NULL, &tv);
-        int redraw = 0;
-
+        
         if (activity < 0) continue;
 
+        // X11 Event Handler - Svuota la coda istantaneamente
         while (XPending(dpy))
         {
             XNextEvent(dpy, &ev);
@@ -138,18 +142,28 @@ int main(void)
             }
         }
 
-        if (activity == 0 || redraw) {
-            update_datetime(&s);
-            update_volume(&s);
-            update_ram(&s);
-            update_ipv4(&s);
-            redraw = 1;
+        if (activity == 0) {
+            update_counter += 80; 
+            
+            if (update_counter % 480 == 0) {
+                update_datetime(&s);
+                redraw = 1;
+            }
+            
+            if (update_counter >= 2000) {
+                update_volume(&s);
+                update_ram(&s);
+                update_ipv4(&s);
+                update_counter = 0;
+                redraw = 1;
+            }
         }
 
         if (redraw) {
             for (int i = 0; i < monitors_count; i++) {
                 draw_bar_on_monitor(dpy, wins[i], gc, &s, i);
             }
+            redraw = 0; 
         }
     }
     
