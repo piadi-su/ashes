@@ -2,15 +2,12 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xft/Xft.h>
-#include <X11/extensions/Xrender.h>
 #include <fontconfig/fontconfig.h>
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
 #include <ifaddrs.h>
 #include <arpa/inet.h>
-#include <sys/socket.h>
-#include <sys/un.h>
 #include <unistd.h>
 #include <stdint.h>
 #include <stdlib.h>

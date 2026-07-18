@@ -6,15 +6,11 @@
  *
  */
 
-#include <X11/X.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <X11/Xlib.h>
-#include <X11/Xatom.h>
 #include <X11/extensions/Xinerama.h> 
 #include <signal.h>
-#include <stdint.h>
-#include <stdlib.h>
 
 //my files
 #include "bar.h"
