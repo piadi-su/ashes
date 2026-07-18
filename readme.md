@@ -9,7 +9,7 @@ It is a fork of **ash**, another simple X11 bar originally designed to work with
 ## dependencies
 
 ```txt
-libx11 libxinerama libxft fontconfig
+cmake libx11 libxinerama libxft fontconfig
 ```
 
 ## installation
