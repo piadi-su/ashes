@@ -252,10 +252,11 @@ build_layout(BarState *s, BarLayout *l)
     snprintf(l->left, sizeof(l->left), "%s", s->workspace);
 
     snprintf(l->right, sizeof(l->right),
-             "Vol:%s%s%s%sRAM %s%s%s",
-             s->volume[0] ? s->volume : "?",
+             "%s%s%sVol:%s%sRAM %s%s%s",
              BAR_SPACER,
              s->ipv4[0] ? s->ipv4 : "?",
+             BAR_SPACER,
+             s->volume[0] ? s->volume : "?",
              BAR_SPACER,
              s->ram[0] ? s->ram : "?",
              BAR_SPACER,
