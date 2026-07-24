@@ -165,25 +165,31 @@ draw_bar_on_monitor(Display *dpy, Window win, GC gc, BarState *s, int monitor_id
             char *token = strtok(prop_copy, " ");
             int local_ws_idx = 1; 
 
-            while (token != NULL) {
-                int num;
-                char status;
-                if (sscanf(token, "%d:%c", &num, &status) == 2) {
-                    if (num >= start_ws && num < end_ws) {
-                        char tmp[32];
-                        if (status == 'A') {
-                            snprintf(tmp, sizeof(tmp), "%s%d%s ", ACTIVE_WS_L_BRACKET, local_ws_idx, ACTIVE_WS_R_BRACKET);
-                        } else if (status == 'O') {
-                            snprintf(tmp, sizeof(tmp), "%d ", local_ws_idx);
-                        } else {
-                            tmp[0] = '\0';
-                        }
-                        strncat(local_workspace_str, tmp, sizeof(local_workspace_str) - strlen(local_workspace_str) - 1);
-                        local_ws_idx++;
-                    }
-                }
-                token = strtok(NULL, " ");
-            }
+			while (token != NULL) {
+				int num;
+				char status;
+				if (sscanf(token, "%d:%c", &num, &status) == 2) {
+					if (num >= start_ws && num < end_ws) {
+						char tmp[64];
+
+						// Mappiamo local_ws_idx (1..10) all'indice dell'array (0..9)
+						int tag_idx = local_ws_idx - 1;
+						const char *label = (tag_idx >= 0 && tag_idx < 10) ? tags[tag_idx] : "?";
+
+						if (status == 'A') {
+							snprintf(tmp, sizeof(tmp), "%s%s%s ", ACTIVE_WS_L_BRACKET, label, ACTIVE_WS_R_BRACKET);
+						} else if (status == 'O') {
+							snprintf(tmp, sizeof(tmp), "%s ", label);
+						} else {
+							tmp[0] = '\0';
+						}
+
+						strncat(local_workspace_str, tmp, sizeof(local_workspace_str) - strlen(local_workspace_str) - 1);
+						local_ws_idx++;
+					}
+				}
+				token = strtok(NULL, " ");
+			}
             free(prop_copy);
         }
         XFree(prop_to_read);

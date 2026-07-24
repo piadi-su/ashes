@@ -26,6 +26,22 @@
 // #define TEXT_COLOR 0x8f00ff
 // #define TEXT_COLOR 0x6016a2
 
+
+// Nomi/icone personalizzati per i 10 workspace locali
+static const char *tags[] = {
+    "web",
+    "code",
+    "term",
+    "chat",
+    "media",
+    "files",
+    "misc",
+    "extra",
+    "sys",
+    "dp"
+};
+
+
 //bar space define also the space between of the modules
 #define BAR_SPACER " | "
 
