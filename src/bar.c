@@ -109,7 +109,6 @@ set_dock_properties(Display *dpy, Window win, int width)
 
     unsigned long strut[12] = {0};
 
-    // Consideriamo anche il margine Y per lo spazio riservato alle finestre
     int total_reserved_height = BAR_HEIGHT + BAR_MARGIN_Y;
 
     if (BOTTOM) {
@@ -280,6 +279,15 @@ draw_bar_on_monitor(Display *dpy, Window win, GC gc, BarState *s, int monitor_id
 
 
 
+static void append_module(char *target, size_t target_size, const char *src) {
+    if (!src || src[0] == '\0') return;
+
+    if (target[0] != '\0') {
+        strncat(target, BAR_SPACER, target_size - strlen(target) - 1);
+    }
+    strncat(target, src, target_size - strlen(target) - 1);
+}
+
 void 
 build_layout(BarState *s, BarLayout *l)
 {
@@ -296,15 +304,19 @@ build_layout(BarState *s, BarLayout *l)
              BAR_SPACER,
              s->ram[0] ? s->ram : "?");
 
-    const char *pos_str[3] = {NULL, NULL, NULL};
+    const char *dt_str = s->datetime[0] ? s->datetime : "?";
 
-    if (WORKSPACES_POS >= 0 && WORKSPACES_POS < 3) pos_str[WORKSPACES_POS] = s->workspace;
-    if (DATETIME_POS >= 0 && DATETIME_POS < 3)     pos_str[DATETIME_POS]   = s->datetime[0] ? s->datetime : "?";
-    if (SYSINFO_POS >= 0 && SYSINFO_POS < 3)      pos_str[SYSINFO_POS]    = sysinfo_str;
+    if (WORKSPACES_POS == 0)      append_module(l->left, sizeof(l->left), s->workspace);
+    else if (WORKSPACES_POS == 1) append_module(l->center, sizeof(l->center), s->workspace);
+    else if (WORKSPACES_POS == 2) append_module(l->right, sizeof(l->right), s->workspace);
 
-    if (pos_str[0]) snprintf(l->left, sizeof(l->left), "%s", pos_str[0]);
-    if (pos_str[1]) snprintf(l->center, sizeof(l->center), "%s", pos_str[1]);
-    if (pos_str[2]) snprintf(l->right, sizeof(l->right), "%s", pos_str[2]);
+    if (SYSINFO_POS == 0)      append_module(l->left, sizeof(l->left), sysinfo_str);
+    else if (SYSINFO_POS == 1) append_module(l->center, sizeof(l->center), sysinfo_str);
+    else if (SYSINFO_POS == 2) append_module(l->right, sizeof(l->right), sysinfo_str);
+
+    if (DATETIME_POS == 0)      append_module(l->left, sizeof(l->left), dt_str);
+    else if (DATETIME_POS == 1) append_module(l->center, sizeof(l->center), dt_str);
+    else if (DATETIME_POS == 2) append_module(l->right, sizeof(l->right), dt_str);
 }
 
 void 
@@ -372,4 +384,5 @@ update_ipv4(BarState *s)
     }
     freeifaddrs(ifaddr);
 }
+
 

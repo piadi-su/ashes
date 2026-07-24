@@ -1,9 +1,15 @@
+#pragma once
+
+
 /* CONFIG FILE 
  * 
  * Every time you change this file
  * you have to recompile ash
  *
  * */
+
+
+
 
 //number of monitors u have
 #define MAX_MONITORS 2
@@ -30,23 +36,23 @@
 
 //Workspace tags
 static const char *tags[] __attribute__((unused)) = {
-    "1:web",
-    "2:code",
-    "3:term",
-    "4:chat",
-    "5:media",
-    "6:files",
-    "7:misc",
-    "8:extra",
-    "9:sys",
-    "10:dp"
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10"
 };
 
 // 0 = LEFT, 1 = CENTER, 2 = RIGHT
 
-#define WORKSPACES_POS  0  
-#define DATETIME_POS    1  
+#define WORKSPACES_POS  1  
 #define SYSINFO_POS     2  
+#define DATETIME_POS    0  
 
 //Floaitng bar
 #define BAR_MARGIN_X 12  // right and left margin of the screen
@@ -76,4 +82,5 @@ static const char *tags[] __attribute__((unused)) = {
 // font that the bar in going to try to use
 #define BAR_FONT "Iosevka Nerd Font:size=12:antialias=true"
 // #define BAR_FONT "JetBrains Mono Nerd Font:size=13:antialias=true"
+
 
