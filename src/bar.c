@@ -295,28 +295,35 @@ build_layout(BarState *s, BarLayout *l)
     l->center[0] = '\0';
     l->right[0] = '\0';
 
-    char sysinfo_str[256];
-    snprintf(sysinfo_str, sizeof(sysinfo_str),
-             "%s%sVol:%s%sRAM %s",
-             s->ipv4[0] ? s->ipv4 : "?",
-             BAR_SPACER,
-             s->volume[0] ? s->volume : "?",
-             BAR_SPACER,
-             s->ram[0] ? s->ram : "?");
+    #define DISPATCH_MODULE(pos, val) \
+        if ((pos) == 0)      append_module(l->left, sizeof(l->left), (val)); \
+        else if ((pos) == 1) append_module(l->center, sizeof(l->center), (val)); \
+        else if ((pos) == 2) append_module(l->right, sizeof(l->right), (val));
 
-    const char *dt_str = s->datetime[0] ? s->datetime : "?";
+    const char *dt_str = s->datetime[0] ? s->datetime : "";
 
-    if (WORKSPACES_POS == 0)      append_module(l->left, sizeof(l->left), s->workspace);
-    else if (WORKSPACES_POS == 1) append_module(l->center, sizeof(l->center), s->workspace);
-    else if (WORKSPACES_POS == 2) append_module(l->right, sizeof(l->right), s->workspace);
+    char vol_str[128] = "";
+    if (s->volume[0]) {
+        snprintf(vol_str, sizeof(vol_str), "Vol:%s", s->volume);
+    }
 
-    if (SYSINFO_POS == 0)      append_module(l->left, sizeof(l->left), sysinfo_str);
-    else if (SYSINFO_POS == 1) append_module(l->center, sizeof(l->center), sysinfo_str);
-    else if (SYSINFO_POS == 2) append_module(l->right, sizeof(l->right), sysinfo_str);
+    char ram_str[128] = "";
+    if (s->ram[0]) {
+        snprintf(ram_str, sizeof(ram_str), "RAM %s", s->ram);
+    }
 
-    if (DATETIME_POS == 0)      append_module(l->left, sizeof(l->left), dt_str);
-    else if (DATETIME_POS == 1) append_module(l->center, sizeof(l->center), dt_str);
-    else if (DATETIME_POS == 2) append_module(l->right, sizeof(l->right), dt_str);
+	//all modules
+	/*
+	 * If you want to add some modules you should
+	 * put the here in order to show them
+	 */
+    DISPATCH_MODULE(WORKSPACES_POS, s->workspace);
+    DISPATCH_MODULE(DATETIME_POS,   dt_str);
+    // DISPATCH_MODULE(IPV4_POS,       s->ipv4);
+    DISPATCH_MODULE(VOLUME_POS,     vol_str);
+    // DISPATCH_MODULE(RAM_POS,        ram_str);
+
+    #undef DISPATCH_MODULE
 }
 
 void 

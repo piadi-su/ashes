@@ -50,9 +50,11 @@ static const char *tags[] __attribute__((unused)) = {
 
 // 0 = LEFT, 1 = CENTER, 2 = RIGHT
 
-#define WORKSPACES_POS  1  
-#define SYSINFO_POS     2  
-#define DATETIME_POS    0  
+#define WORKSPACES_POS  0  
+#define DATETIME_POS    2  
+#define IPV4_POS        2  
+#define VOLUME_POS      2  
+#define RAM_POS         2
 
 //Floaitng bar
 #define BAR_MARGIN_X 12  // right and left margin of the screen
