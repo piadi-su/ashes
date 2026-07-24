@@ -121,7 +121,7 @@ int main(void)
         
         if (activity < 0) continue;
 
-        // X11 Event Handler - Svuota la coda istantaneamente
+        // X11 Event Handler 
         while (XPending(dpy))
         {
             XNextEvent(dpy, &ev);

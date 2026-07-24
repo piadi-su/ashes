@@ -19,12 +19,12 @@
 XftFont *xft_font = NULL;
 XftColor xft_color;
 
-static XftDraw *monitor_draws[4] = {NULL, NULL, NULL, NULL};
+static XftDraw *monitor_draws[MAX_MONITORS] = {NULL};
 
 void 
 init_multi_draws(Display *dpy, Window wins[], int count, int screen)
 {
-    for (int i = 0; i < count && i < 4; i++) {
+    for (int i = 0; i < count && i < MAX_MONITORS; i++) {
         monitor_draws[i] = XftDrawCreate(
             dpy,
             wins[i],
@@ -37,7 +37,7 @@ init_multi_draws(Display *dpy, Window wins[], int count, int screen)
 void 
 free_multi_draws(int count)
 {
-    for (int i = 0; i < count && i < 4; i++) {
+    for (int i = 0; i < count && i < MAX_MONITORS; i++) {
         if (monitor_draws[i]) {
             XftDrawDestroy(monitor_draws[i]);
             monitor_draws[i] = NULL;
@@ -136,7 +136,7 @@ set_dock_properties(Display *dpy, Window win, int width)
 void 
 draw_bar_on_monitor(Display *dpy, Window win, GC gc, BarState *s, int monitor_idx)
 {
-    if (monitor_idx >= 4 || !monitor_draws[monitor_idx] || !dpy) return;
+    if (monitor_idx >= MAX_MONITORS || !monitor_draws[monitor_idx] || !dpy) return;
 
     char local_workspace_str[128] = "";
 
@@ -165,31 +165,31 @@ draw_bar_on_monitor(Display *dpy, Window win, GC gc, BarState *s, int monitor_id
             char *token = strtok(prop_copy, " ");
             int local_ws_idx = 1; 
 
-			while (token != NULL) {
-				int num;
-				char status;
-				if (sscanf(token, "%d:%c", &num, &status) == 2) {
-					if (num >= start_ws && num < end_ws) {
-						char tmp[64];
+            while (token != NULL) {
+                int num;
+                char status;
+                if (sscanf(token, "%d:%c", &num, &status) == 2) {
+                    if (num >= start_ws && num < end_ws) {
+                        char tmp[64];
 
-						// Mappiamo local_ws_idx (1..10) all'indice dell'array (0..9)
-						int tag_idx = local_ws_idx - 1;
-						const char *label = (tag_idx >= 0 && tag_idx < 10) ? tags[tag_idx] : "?";
+                        int tag_idx = local_ws_idx - 1;
+                        int num_tags = sizeof(tags) / sizeof(tags[0]);
+                        const char *label = (tag_idx >= 0 && tag_idx < num_tags) ? tags[tag_idx] : "?";
 
-						if (status == 'A') {
-							snprintf(tmp, sizeof(tmp), "%s%s%s ", ACTIVE_WS_L_BRACKET, label, ACTIVE_WS_R_BRACKET);
-						} else if (status == 'O') {
-							snprintf(tmp, sizeof(tmp), "%s ", label);
-						} else {
-							tmp[0] = '\0';
-						}
+                        if (status == 'A') {
+                            snprintf(tmp, sizeof(tmp), "%s%s%s ", ACTIVE_WS_L_BRACKET, label, ACTIVE_WS_R_BRACKET);
+                        } else if (status == 'O') {
+                            snprintf(tmp, sizeof(tmp), "%s ", label);
+                        } else {
+                            tmp[0] = '\0';
+                        }
 
-						strncat(local_workspace_str, tmp, sizeof(local_workspace_str) - strlen(local_workspace_str) - 1);
-						local_ws_idx++;
-					}
-				}
-				token = strtok(NULL, " ");
-			}
+                        strncat(local_workspace_str, tmp, sizeof(local_workspace_str) - strlen(local_workspace_str) - 1);
+                        local_ws_idx++;
+                    }
+                }
+                token = strtok(NULL, " ");
+            }
             free(prop_copy);
         }
         XFree(prop_to_read);
@@ -202,11 +202,10 @@ draw_bar_on_monitor(Display *dpy, Window win, GC gc, BarState *s, int monitor_id
         local_workspace_str[len_ws - 1] = '\0';
     }
 
-    // --- RENDERING ---
+    snprintf(s->workspace, sizeof(s->workspace), "%s", local_workspace_str);
+
     BarLayout l;
     build_layout(s, &l);
-    
-    snprintf(l.left, sizeof(l.left), "%s", local_workspace_str);
 
     XSetWindowBackground(dpy, win, BACKGROUND_COLOR);
     XSetForeground(dpy, gc, TEXT_COLOR);
@@ -224,58 +223,89 @@ draw_bar_on_monitor(Display *dpy, Window win, GC gc, BarState *s, int monitor_id
     int text_y = (bar_height - (ascent + descent)) / 2 + ascent;
     int padding = 10;
 
-    XftDrawStringUtf8(
-        monitor_draws[monitor_idx],
-        &xft_color,
-        xft_font,
-        padding,
-        text_y,
-        (FcChar8 *)l.left,
-        strlen(l.left)
-    );
+    if (strlen(l.left) > 0) {
+        XftDrawStringUtf8(
+            monitor_draws[monitor_idx],
+            &xft_color,
+            xft_font,
+            padding,
+            text_y,
+            (FcChar8 *)l.left,
+            strlen(l.left)
+        );
+    }
 
-    XGlyphInfo ext;
-    XftTextExtentsUtf8(dpy, xft_font, (FcChar8 *)l.right, strlen(l.right), &ext);
+    if (strlen(l.center) > 0) {
+        XGlyphInfo ext_center;
+        XftTextExtentsUtf8(dpy, xft_font, (FcChar8 *)l.center, strlen(l.center), &ext_center);
+        int center_x = (bar_width - ext_center.xOff) / 2;
 
-    int right_x = bar_width - ext.xOff - padding;
+        XftDrawStringUtf8(
+            monitor_draws[monitor_idx],
+            &xft_color,
+            xft_font,
+            center_x,
+            text_y,
+            (FcChar8 *)l.center,
+            strlen(l.center)
+        );
+    }
 
-    XftDrawStringUtf8(
-        monitor_draws[monitor_idx],
-        &xft_color,
-        xft_font,
-        right_x,
-        text_y,
-        (FcChar8 *)l.right,
-        strlen(l.right)
-    );
+    if (strlen(l.right) > 0) {
+        XGlyphInfo ext_right;
+        XftTextExtentsUtf8(dpy, xft_font, (FcChar8 *)l.right, strlen(l.right), &ext_right);
+        int right_x = bar_width - ext_right.xOff - padding;
+
+        XftDrawStringUtf8(
+            monitor_draws[monitor_idx],
+            &xft_color,
+            xft_font,
+            right_x,
+            text_y,
+            (FcChar8 *)l.right,
+            strlen(l.right)
+        );
+    }
 
     XFlush(dpy);
 }
 
+
+
+
 void 
 build_layout(BarState *s, BarLayout *l)
 {
-    snprintf(l->left, sizeof(l->left), "%s", s->workspace);
+    l->left[0] = '\0';
+    l->center[0] = '\0';
+    l->right[0] = '\0';
 
-    snprintf(l->right, sizeof(l->right),
-             "%s%s%sVol:%s%sRAM %s%s%s",
-             BAR_SPACER,
+    char sysinfo_str[256];
+    snprintf(sysinfo_str, sizeof(sysinfo_str),
+             "%s%sVol:%s%sRAM %s",
              s->ipv4[0] ? s->ipv4 : "?",
              BAR_SPACER,
              s->volume[0] ? s->volume : "?",
              BAR_SPACER,
-             s->ram[0] ? s->ram : "?",
-             BAR_SPACER,
-             s->datetime[0] ? s->datetime : "?");
-}
+             s->ram[0] ? s->ram : "?");
 
+    const char *pos_str[3] = {NULL, NULL, NULL};
+
+    if (WORKSPACES_POS >= 0 && WORKSPACES_POS < 3) pos_str[WORKSPACES_POS] = s->workspace;
+    if (DATETIME_POS >= 0 && DATETIME_POS < 3)     pos_str[DATETIME_POS]   = s->datetime[0] ? s->datetime : "?";
+    if (SYSINFO_POS >= 0 && SYSINFO_POS < 3)      pos_str[SYSINFO_POS]    = sysinfo_str;
+
+    if (pos_str[0]) snprintf(l->left, sizeof(l->left), "%s", pos_str[0]);
+    if (pos_str[1]) snprintf(l->center, sizeof(l->center), "%s", pos_str[1]);
+    if (pos_str[2]) snprintf(l->right, sizeof(l->right), "%s", pos_str[2]);
+}
 
 void 
 update_datetime(BarState *s)
 {
     time_t t = time(NULL);
     struct tm *tm_info = localtime(&t);
-    strftime(s->datetime, sizeof(s->datetime), "%a/%d  %H:%M", tm_info);
+    strftime(s->datetime, sizeof(s->datetime), "%A %d  %H:%M", tm_info);
 }
 
 void 

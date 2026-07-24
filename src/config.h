@@ -28,7 +28,7 @@
 
 
 // Nomi/icone personalizzati per i 10 workspace locali
-static const char *tags[] = {
+static const char *tags[] __attribute__((unused)) = {
     "web",
     "code",
     "term",
@@ -40,6 +40,12 @@ static const char *tags[] = {
     "sys",
     "dp"
 };
+
+// 0 = LEFT, 1 = CENTER, 2 = RIGHT
+
+#define WORKSPACES_POS  0  
+#define DATETIME_POS    1  
+#define SYSINFO_POS     2  
 
 
 //bar space define also the space between of the modules
