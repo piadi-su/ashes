@@ -109,12 +109,15 @@ set_dock_properties(Display *dpy, Window win, int width)
 
     unsigned long strut[12] = {0};
 
+    // Consideriamo anche il margine Y per lo spazio riservato alle finestre
+    int total_reserved_height = BAR_HEIGHT + BAR_MARGIN_Y;
+
     if (BOTTOM) {
-        strut[3] = BAR_HEIGHT; // bottom
+        strut[3] = total_reserved_height; // bottom
         strut[10] = 0;
         strut[11] = width;
     } else {
-        strut[2] = BAR_HEIGHT; // top
+        strut[2] = total_reserved_height; // top
         strut[8] = 0;
         strut[9] = width;
     }

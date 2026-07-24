@@ -72,15 +72,20 @@ int main(void)
             m_h = DisplayHeight(dpy, screen);
         }
 
-        int y_pos = (BOTTOM) ? (m_y + m_h - BAR_HEIGHT) : m_y;
+		int bar_w = m_w - (BAR_MARGIN_X * 2);
+		int bar_x = m_x + BAR_MARGIN_X;
 
-        wins[i] = XCreateWindow(
-                dpy, root, m_x, y_pos, m_w, BAR_HEIGHT, 0,
-                CopyFromParent, InputOutput, CopyFromParent,
-                CWOverrideRedirect, &attrs
-                );
+		int y_pos = (BOTTOM) 
+			? (m_y + m_h - BAR_HEIGHT - BAR_MARGIN_Y) 
+			: (m_y + BAR_MARGIN_Y);
 
-        set_dock_properties(dpy, wins[i], m_w);
+		wins[i] = XCreateWindow(
+				dpy, root, bar_x, y_pos, bar_w, BAR_HEIGHT, 0,
+				CopyFromParent, InputOutput, CopyFromParent,
+				CWOverrideRedirect, &attrs
+				);
+
+		set_dock_properties(dpy, wins[i], bar_w);
 
         XSelectInput(dpy, wins[i], ExposureMask | KeyPressMask);
 

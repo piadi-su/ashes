@@ -27,18 +27,18 @@
 // #define TEXT_COLOR 0x6016a2
 
 
-// Nomi/icone personalizzati per i 10 workspace locali
+//Workspace tags
 static const char *tags[] __attribute__((unused)) = {
-    "web",
-    "code",
-    "term",
-    "chat",
-    "media",
-    "files",
-    "misc",
-    "extra",
-    "sys",
-    "dp"
+    "1:web",
+    "2:code",
+    "3:term",
+    "4:chat",
+    "5:media",
+    "6:files",
+    "7:misc",
+    "8:extra",
+    "9:sys",
+    "10:dp"
 };
 
 // 0 = LEFT, 1 = CENTER, 2 = RIGHT
@@ -47,6 +47,9 @@ static const char *tags[] __attribute__((unused)) = {
 #define DATETIME_POS    1  
 #define SYSINFO_POS     2  
 
+//Floaitng bar
+#define BAR_MARGIN_X 12  // right and left margin of the screen
+#define BAR_MARGIN_Y 8   // up/down distance for screen
 
 //bar space define also the space between of the modules
 #define BAR_SPACER " | "
@@ -61,7 +64,7 @@ static const char *tags[] __attribute__((unused)) = {
 
 
 // Bottom = 0 -> top | Bottom = 1 -> bottom
-#define BOTTOM 1
+#define BOTTOM 0
 
 
 
