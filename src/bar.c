@@ -179,13 +179,17 @@ draw_bar_on_monitor(Display *dpy, Window win, GC gc, BarState *s, int monitor_id
                         int num_tags = sizeof(tags) / sizeof(tags[0]);
                         const char *label = (tag_idx >= 0 && tag_idx < num_tags) ? tags[tag_idx] : "?";
 
-                        if (status == 'A') {
-                            snprintf(tmp, sizeof(tmp), "%s%s%s ", ACTIVE_WS_L_BRACKET, label, ACTIVE_WS_R_BRACKET);
-                        } else if (status == 'O') {
-                            snprintf(tmp, sizeof(tmp), "%s ", label);
-                        } else {
-                            tmp[0] = '\0';
-                        }
+						if (status == 'A') {
+							snprintf(tmp, sizeof(tmp), "%s%s%s ", ACTIVE_WS_L_BRACKET, label, ACTIVE_WS_R_BRACKET);
+						} else if (status == 'O') {
+							snprintf(tmp, sizeof(tmp), "%s%s ", label, WS_OCCUPIED_SUFFIX);
+						} else {
+							if (SHOW_ALL_WORKSPACES) {
+								snprintf(tmp, sizeof(tmp), "%s ", label); 
+							} else {
+								tmp[0] = '\0'; 
+							}
+						}
 
                         strncat(local_workspace_str, tmp, sizeof(local_workspace_str) - strlen(local_workspace_str) - 1);
                         local_ws_idx++;

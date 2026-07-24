@@ -15,7 +15,8 @@
 
 
 // Bar background color
-#define BACKGROUND_COLOR 0x1d2021
+#define BACKGROUND_COLOR 0x000000
+// #define BACKGROUND_COLOR 0x1d2021
 // #define BACKGROUND_COLOR 0xebdbb2
 
 
@@ -50,6 +51,10 @@ static const char *tags[] __attribute__((unused)) = {
 //Floaitng bar
 #define BAR_MARGIN_X 12  // right and left margin of the screen
 #define BAR_MARGIN_Y 8   // up/down distance for screen
+
+// --- WORKSPACES CONFIG ---
+#define SHOW_ALL_WORKSPACES 1  // 1 = ALL, 0 = only the ACTIVE ones
+#define WS_OCCUPIED_SUFFIX  "◦"  
 
 //bar space define also the space between of the modules
 #define BAR_SPACER " | "
