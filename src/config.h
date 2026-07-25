@@ -55,6 +55,7 @@ static const char *tags[] __attribute__((unused)) = {
 #define IPV4_POS        2  
 #define VOLUME_POS      2  
 #define RAM_POS         2
+#define BATTERY_POS     2
 
 //Floaitng bar
 #define BAR_MARGIN_X 12  // right and left margin of the screen
@@ -79,7 +80,8 @@ static const char *tags[] __attribute__((unused)) = {
 // Bottom = 0 -> top | Bottom = 1 -> bottom
 #define BOTTOM 0
 
-
+//define your battery
+#define BATTERY_DEV   "BAT0"
 
 // font that the bar in going to try to use
 #define BAR_FONT "Iosevka Nerd Font:size=12:antialias=true"

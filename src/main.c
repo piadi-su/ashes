@@ -105,6 +105,7 @@ int main(void)
     update_volume(&s);
     update_ram(&s);
     update_ipv4(&s);
+	update_battery(&s);
 
 	int x11_fd = ConnectionNumber(dpy);
     fd_set in_fds;
@@ -155,6 +156,7 @@ int main(void)
                 update_volume(&s);
                 update_ram(&s);
                 update_ipv4(&s);
+				update_battery(&s);
                 update_counter = 0;
                 redraw = 1;
             }

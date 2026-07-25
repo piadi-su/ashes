@@ -10,6 +10,7 @@ typedef struct {
     char volume[64];
     char ipv4[64];
     char ram[64];
+	char battery[64];
     char datetime[128];
 } BarState;
 
@@ -32,6 +33,7 @@ void free_multi_draws(int count);
 void update_volume(BarState *s);
 void update_ipv4(BarState *s);
 void update_ram(BarState *s);
+void update_battery(BarState *s);
 void update_datetime(BarState *s);
 
 // Font 

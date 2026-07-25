@@ -312,6 +312,11 @@ build_layout(BarState *s, BarLayout *l)
         snprintf(ram_str, sizeof(ram_str), "RAM %s", s->ram);
     }
 
+	char bat_str[128] = ""; 
+    if (s->battery[0]) {
+        snprintf(bat_str, sizeof(bat_str), "Bat:%s", s->battery);
+    }
+
 	//all modules
 	/*
 	 * If you want to add some modules you should
@@ -322,6 +327,7 @@ build_layout(BarState *s, BarLayout *l)
     // DISPATCH_MODULE(IPV4_POS,       s->ipv4);
     DISPATCH_MODULE(VOLUME_POS,     vol_str);
     // DISPATCH_MODULE(RAM_POS,        ram_str);
+	DISPATCH_MODULE(BATTERY_POS,    bat_str);
 
     #undef DISPATCH_MODULE
 }
@@ -392,4 +398,44 @@ update_ipv4(BarState *s)
     freeifaddrs(ifaddr);
 }
 
+void 
+update_battery(BarState *s)
+{
+    char cap_path[128];
+    char stat_path[128];
+
+    snprintf(cap_path, sizeof(cap_path), "/sys/class/power_supply/%s/capacity", BATTERY_DEV);
+    snprintf(stat_path, sizeof(stat_path), "/sys/class/power_supply/%s/status", BATTERY_DEV);
+
+    FILE *f_cap = fopen(cap_path, "r");
+    if (!f_cap) {
+        s->battery[0] = '\0'; 
+        return;
+    }
+
+    int capacity = 0;
+    if (fscanf(f_cap, "%d", &capacity) != 1) {
+        capacity = 0;
+    }
+    fclose(f_cap);
+
+    char status[32] = "";
+    FILE *f_stat = fopen(stat_path, "r");
+    if (f_stat) {
+        if (fscanf(f_stat, "%31s", status) != 1) {
+            status[0] = '\0';
+        }
+        fclose(f_stat);
+    }
+
+    char icon = ' ';
+    if (strcmp(status, "Charging") == 0) icon = '+';
+    else if (strcmp(status, "Discharging") == 0) icon = '-';
+
+    if (icon != ' ') {
+        snprintf(s->battery, sizeof(s->battery), "%d%%%c", capacity, icon);
+    } else {
+        snprintf(s->battery, sizeof(s->battery), "%d%%", capacity);
+    }
+}
 
